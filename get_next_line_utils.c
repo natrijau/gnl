@@ -6,7 +6,7 @@
 /*   By: natrijau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 11:00:49 by natrijau          #+#    #+#             */
-/*   Updated: 2023/11/22 15:15:54 by natrijau         ###   ########.fr       */
+/*   Updated: 2023/11/24 11:52:15 by natrijau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char			*str;
 	unsigned int	i;
@@ -32,7 +32,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (NULL);
 	i = 0;
 	j = 0;
-	str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	str = ft_calloc(1, (ft_strlen(s1) + ft_strlen(s2) + 1));
 	if (!str)
 		return (NULL);
 	while (s1[i])
@@ -45,7 +45,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		str[i + j] = s2[j];
 		j++;
 	}
-	str[i + j] = '\0';
+	free(s1);
 	return (str);
 }
 
@@ -57,7 +57,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	i = 0;
 	if (!s || start >= ft_strlen(s))
 	{
-		str = (char *)malloc(sizeof(char));
+		str = ft_calloc(1, 1);
 		if (!str)
 			return (NULL);
 		str[0] = '\0';
@@ -66,14 +66,13 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	if (len > ft_strlen(s))
 		len = ft_strlen(s);
 	if (len > (ft_strlen(s) - start))
-		str = (char *)malloc(sizeof(char) * ((ft_strlen(s) - start) + 1));
+		str = ft_calloc(1, ((ft_strlen(s) - start) + 1));
 	else
-		str = (char *)malloc(sizeof(char) * (len + 1));
+		str = ft_calloc(1, (len + 1));
 	if (!str)
 		return (NULL);
 	while (i < len && s[start])
 		str[i++] = s[start++];
-	str[i] = '\0';
 	return (str);
 }
 
