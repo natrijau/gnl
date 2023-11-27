@@ -6,7 +6,7 @@
 /*   By: natrijau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:26:27 by natrijau          #+#    #+#             */
-/*   Updated: 2023/11/24 11:56:21 by natrijau         ###   ########.fr       */
+/*   Updated: 2023/11/27 14:43:52 by natrijau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static char *cut_nl_start(char *str)
 		}
 		i++;
 	}
-	return (str);
+	return (ft_substr(str, 0, i));
 }
 
 static char *cut_nl_end(char *str)
@@ -73,7 +73,8 @@ char	*get_next_line(int fd)
 {
 	char		*buff;
 	char		*line;
-	static char	*stock;
+	static char	*stock = NULL;
+	char		*tmp;
 	int			read_byte;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
@@ -91,47 +92,54 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		if (stock == NULL && buff[0] != '\0')
-			stock = ft_substr(buff, 0, BUFFER_SIZE);
-		else if (buff[0] != '\0')
+			stock = ft_substr(buff, 0, BUFFER_SIZE + 1);
+		else if (buff[0] != '\0' && read_byte != 0)
 			stock = ft_strjoin(stock, buff);
-		if (have_nl(stock) == 1 || read_byte == 0)
+		if (have_nl(stock) == 1 || read_byte < BUFFER_SIZE)
 		{
             free(buff);
             buff = NULL;
 			line = cut_nl_start(stock);
-			stock = cut_nl_end(stock);
+			if (read_byte >= 0)
+			{
+				tmp = stock;
+				stock = cut_nl_end(tmp);
+				free(tmp);
+			}
+			else
+			{
+        		free(stock);
+				stock = NULL;
+			}
 			return (line);
 		}
 	}
     free(buff);
-    if (read_byte == '\0')
-    {
-        free(stock);
-    }
+    
 	return (NULL);
 }
-/*
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
 
-int	main(int ac, char **av)
-{
-	int		fd;
-	char	*str;
+// #include <string.h>
+// #include <stdlib.h>
+// #include <sys/stat.h>
 
-	(void)ac;
-	(void)av;
-	fd = open("test.txt", O_RDONLY);
-    while (1)
-    {
-        str = get_next_line(fd);
-        if (str)
-            printf("%s", str);
-        else
-            break;
-        free(str);
-    }
-	close(fd);
-	return (0);
-}*/
+// int	main(int ac, char **av)
+// {
+// 	int		fd;
+// 	char	*str;
+
+// 	(void)ac;
+// 	(void)av;
+// 	fd = open("test.txt", O_RDONLY);
+//    while (1)
+//    {
+//        str = get_next_line(fd);
+//        if (str)
+//            printf("%s***", str);
+//        else
+//            break;
+//        free(str);
+//    }
+// 	close(fd);
+// 	return (0);
+// }
