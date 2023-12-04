@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: natrijau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/23 17:26:27 by natrijau          #+#    #+#             */
-/*   Updated: 2023/12/04 11:43:48 by natrijau         ###   ########.fr       */
+/*   Created: 2023/12/04 11:34:20 by natrijau          #+#    #+#             */
+/*   Updated: 2023/12/04 11:44:16 by natrijau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -81,7 +81,7 @@ char	*get_next_line(int fd)
 {
 	char		*buff;
 	char		*line;
-	static char	*stock = NULL;
+	static char	*stock[1024];
 	int			read_byte;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
@@ -92,15 +92,15 @@ char	*get_next_line(int fd)
 	while (1)
 	{
 		read_byte = read(fd, buff, BUFFER_SIZE);
-		if (read_byte < 1 && !stock)
+		if (read_byte < 1 && !stock[fd])
 		{
 			free(buff);
 			return (NULL);
 		}
-		get_stock(read_byte, &buff, &stock);
-		if (have_nl(stock) == 1 || read_byte < BUFFER_SIZE)
+		get_stock(read_byte, &buff, &stock[fd]);
+		if (have_nl(stock[fd]) == 1 || read_byte < BUFFER_SIZE)
 		{
-			line = get_line(&buff, &stock, read_byte);
+			line = get_line(&buff, &stock[fd], read_byte);
 			return (line);
 		}
 	}
